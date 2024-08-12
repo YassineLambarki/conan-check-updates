@@ -117,7 +117,8 @@ _REGEX_CONAN_REFERENCE = (
     rf"(?P<package>{_REGEX_CONAN_ATTRIBUTE})"
     rf"\/(?P<version>{_REGEX_CONAN_VERSION})"
     rf"(?:#(?P<revision>{_REGEX_CONAN_REVISION_MD5_SHA1}))?"  # optional
-    rf"(?:@(?P<user>{_REGEX_CONAN_ATTRIBUTE})\/(?P<channel>{_REGEX_CONAN_ATTRIBUTE}))?"  # optional
+    rf"(?:@(?P<user>{_REGEX_CONAN_ATTRIBUTE}))?"
+    rf"(?:\/(?P<channel>{_REGEX_CONAN_ATTRIBUTE}))?"  # optional
 )
 
 _PATTERN_CONAN_REFERENCE = re.compile(_REGEX_CONAN_REFERENCE)
