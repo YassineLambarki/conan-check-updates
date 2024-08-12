@@ -10,6 +10,7 @@ from functools import lru_cache
 from itertools import chain
 from pathlib import Path
 from typing import AsyncIterator, List, Optional, Tuple
+import json
 
 from .version import (
     Version,
@@ -213,20 +214,12 @@ def inspect_requires_conanfile_py(conanfile: Path) -> List[ConanReference]:
             args = chain.from_iterable(("-a", attr) for attr in _REQUIRES_ATTRIBUTES)
             return ("conan", "inspect", str(conanfile), *args)
         if conan_version().major == 2:  # noqa: PLR2004
-            return ("conan", "inspect", str(conanfile))
+            return ("conan", "inspect", str(conanfile), "--format=json")
         raise RuntimeError(f"Conan version {conan_version()!s} not supported")
 
     stdout, _ = _run_capture(*get_command(), timeout=TIMEOUT)
 
-    def gen_dict():
-        for line in stdout.decode().splitlines():
-            key, _, value = (part.strip() for part in line.partition(":"))
-            if key and value:
-                if value.startswith(("(", "[")) and value.endswith((")", "]")):
-                    value = literal_eval(value)
-                yield key, value
-
-    attributes = dict(gen_dict())
+    attributes = dict(json.loads(stdout.decode()))
 
     def gen_requires():
         for key, value in attributes.items():
