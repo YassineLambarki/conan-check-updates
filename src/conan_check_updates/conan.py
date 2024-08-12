@@ -195,15 +195,14 @@ def inspect_requirements_conanfile_py(conanfile: Path) -> List[ConanReference]:
             # ignore empty line or line comments
             if not line or line.startswith("#"):
                 continue
-            res = re.search(r"self\.(?:tool_)*requires\((.*)\)", line)
+            res = re.search(r'self\.(?:(tool|python)_)*requires\("(.*)"(?:(\)|,.*))', line)
+            if res is None:
+                res = re.search(r'(tool|python)_requires = "(.*)"', line)
             if res:
-                args = res.group(1)
-                arg = args.partition(",")[0].strip()  # get first argument -> reference string
-                ref = _dequote(arg)
+                ref = res.group(2)
                 if len(ref) > 0:
                     refs.append(ref)
     return list(map(ConanReference.parse, refs))
-
 
 def inspect_requires_conanfile_py(conanfile: Path) -> List[ConanReference]:
     """Get requirements of conanfile.py with `conan inspect`."""
@@ -263,9 +262,7 @@ def inspect_requires_conanfile_txt(conanfile: Path) -> List[ConanReference]:
 def inspect_requires_conanfile(conanfile: Path) -> List[ConanReference]:
     """Get requirements of conanfile.py/conanfile.py"""
     if conanfile.name == "conanfile.py":
-        return inspect_requires_conanfile_py(conanfile) + inspect_requirements_conanfile_py(
-            conanfile
-        )
+        return inspect_requires_conanfile_py(conanfile) + inspect_requirements_conanfile_py(conanfile)
     if conanfile.name == "conanfile.txt":
         return inspect_requires_conanfile_txt(conanfile)
     raise ValueError(f"Invalid conanfile: {conanfile!s}")

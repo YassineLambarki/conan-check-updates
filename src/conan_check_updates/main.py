@@ -77,7 +77,7 @@ async def check_updates(
             pkg_name += f"@{ref.user}"
         if ref.channel:
             pkg_name += f"/{ref.channel}"
-    print(pkg_name)
+        print(pkg_name)
 
     if package_filter and package_filter[-1] == "filter":
         refs = [ref for ref in refs if matches_any(ref.package, *package_filter)]
