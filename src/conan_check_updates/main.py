@@ -67,7 +67,7 @@ async def check_updates(
         progress_callback: Callback for progress updates
     """
     refs = inspect_requires_conanfile(conanfile)
-    if package_filter:
+    if package_filter and package_filter[-1] == "filter":
         refs = [ref for ref in refs if matches_any(ref.package, *package_filter)]
 
     done = 0
